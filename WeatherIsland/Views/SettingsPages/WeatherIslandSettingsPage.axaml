@@ -1,0 +1,134 @@
+﻿<ci:SettingsPageBase
+    x:Class="WeatherIsland.Views.SettingsPages.WeatherIslandSettingsPage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+    xmlns:fa="using:FluentAvalonia.UI.Controls"
+    xmlns:settingsPages="clr-namespace:WeatherIsland.Views.SettingsPages"
+    mc:Ignorable="d" 
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    Background="{DynamicResource MaterialDesignPaper}"
+    FontFamily="{StaticResource HarmonyOsSans}"
+    TextElement.FontWeight="Regular"
+    TextElement.FontSize="14"
+    d:DataContext="{d:DesignInstance settingsPages:WeatherIslandSettingsPage}"
+    d:DesignHeight="450" d:DesignWidth="800">
+
+    <ScrollViewer DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=settingsPages:WeatherIslandSettingsPage}}">
+        <StackPanel Classes="settings-container animated-intro" Margin="20">
+
+            <!-- 欢迎信息 -->
+            <controls:InfoBar IsOpen="True" Severity="Informational">
+                <controls:InfoBar.Message>欢迎使用 WeatherIsland！请及时完成相关配置</controls:InfoBar.Message>
+            </controls:InfoBar>
+
+            <!-- 对接方式选择，绑定到 Settings.ApiType -->
+            <TextBlock Text="选择对接API方式" FontWeight="SemiBold" Margin="0,1" />
+            <ComboBox x:Name="CitySelector"
+                      SelectedIndex="{Binding Settings.ApiType, Mode=TwoWay}"
+                      Margin="0,1"
+                      SelectionChanged="CitySelector_OnSelectionChanged">
+                <ComboBoxItem>API KEY</ComboBoxItem>
+                <ComboBoxItem>JWT</ComboBoxItem>
+            </ComboBox>
+
+            <!-- ===== API地址面板 ===== -->
+            <StackPanel x:Name="ApiKey" Margin="0,10,0,0">
+                <TextBlock Text="请输入API Key：" Margin="0,0,0,5" />
+                <TextBox Text="{Binding Settings.ApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalAlignment="Stretch"
+                         Watermark="例如：ABCD1234EFGH 你可以随时在控制台-项目管理中查看生成的API KEY。" />
+            </StackPanel>
+
+            <!-- ===== JWT面板 ===== -->
+            <StackPanel x:Name="JwtPanel" Margin="0,10,0,0" IsVisible="False">
+                <Button x:Name="TutorialButton" Content="密钥生成教程" Click="Tutorial_OnClick" />
+                <Button x:Name="TestJwtButton" 
+                        Content="测试生成 JWT" 
+                        Click="TestJwtButton_OnClick" 
+                        Margin="0,8,0,0" />
+
+                <Border x:Name="JwtResultPanel"
+                        Background="{DynamicResource MaterialDesignCardBackground}"
+                        CornerRadius="4"
+                        BorderBrush="{DynamicResource MaterialDesignDivider}"
+                        BorderThickness="1"
+                        Margin="0,8,0,0"
+                        IsVisible="False">
+                    <StackPanel Margin="10">
+                        <TextBlock Text="生成的 JWT：" 
+                                   FontWeight="SemiBold" 
+                                   Margin="0,0,0,5" />
+                        <Border Background="{DynamicResource MaterialDesignBackground}"
+                                CornerRadius="3"
+                                Padding="8"
+                                Margin="0,0,0,8">
+                            <TextBlock x:Name="JwtResultText"
+                                       Text=""
+                                       FontFamily="Consolas, Courier New, monospace"
+                                       FontSize="11"
+                                       TextWrapping="Wrap"
+                                       MaxHeight="100" />
+                        </Border>
+                        <Button x:Name="CopyJwtButton"
+                                Content="复制 JWT"
+                                Click="CopyJwtButton_OnClick"
+                                HorizontalAlignment="Right"
+                                Width="120" />
+                    </StackPanel>
+                </Border>
+                <fa:TeachingTip x:Name="GeneratedTeachingTip"
+                                Target="{Binding #MyButton}"
+                                Title="生成密钥 and 配置"
+                                Subtitle="请打开浏览器（Chrome 137+，Edge 137+，Firefox 129+，Safari 17+），（通常）按下F12，打开控制台，执行代码（已复制到剪贴板）。在控制台选择身份认证方式JSON Web Token复制公钥的全部内容，在公钥文本框中粘贴公钥内容点击“保存”按钮">
+                </fa:TeachingTip>
+
+                <TextBlock Text="请输入私钥：" Margin="0,8,0,5" />
+                <TextBox Text="{Binding Settings.PrivateKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalAlignment="Stretch"
+                         Watermark="请粘贴完整的 PEM 格式私钥（包含 BEGIN 和 END 行）"
+                         UseFloatingWatermark="False"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         MinHeight="120" />
+                <TextBlock Text="请输入凭据ID"/>
+                <TextBox Text="{Binding Settings.Kid , Mode = TwoWay , UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalAlignment="Stretch"
+                         Watermark="例如 ABCDE12345 你可以在控制台-项目管理中查看"/>
+            
+                <TextBlock Text="请输入项目ID"/>
+                <TextBox Text= "{Binding Settings.Sub , Mode = TwoWay , UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalAlignment="Stretch"
+                         Watermark="例如 ABCDE23456 你可以在控制台-项目管理中查看"/>
+
+            </StackPanel>
+            <TextBlock Text="请输入API地址 请不要填写 https://" Margin="0,0,0,5" />
+            <TextBox Text="{Binding Settings.ApiAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     HorizontalAlignment="Stretch"
+                     Watermark="例如：abc1234xyz.def.qweatherapi.com" />
+            
+            <TextBlock Text="选择请求API方式" FontWeight="SemiBold" Margin="0,1" />
+            <ComboBox x:Name="GetAPI"
+                      Margin="0,1"
+                      SelectionChanged="GetAPI_OnSelectionChanged"
+                      SelectedIndex="{Binding Settings.GetApiMode, Mode=TwoWay}">
+                <ComboBoxItem>JWT</ComboBoxItem>
+                <ComboBoxItem>API KEY</ComboBoxItem>
+            </ComboBox>
+            
+            <controls:InfoBar x:Name="GetApiInfoBar"         
+                              IsOpen="{Binding IsInfoBarOpen}" 
+                              IsClosable="False"  
+                              Severity="Warning"
+                              Message="{Binding InfoBarMessage}" />
+            
+            <Button x:Name="TestGet" Content="测试请求" Click = "GetTestButton_OnClick"/>
+            
+            
+
+        </StackPanel>
+    </ScrollViewer>
+</ci:SettingsPageBase>
